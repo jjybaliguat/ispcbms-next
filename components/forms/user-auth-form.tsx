@@ -18,7 +18,8 @@ import * as z from 'zod';
 import GithubSignInButton from '../github-auth-button';
 
 const formSchema = z.object({
-  email: z.string().email({ message: 'Enter a valid email address' })
+  email: z.string().email({ message: 'Enter a valid email address' }),
+  password: z.string().min(1, { message: 'Password is required' })
 });
 
 type UserFormValue = z.infer<typeof formSchema>;
@@ -27,8 +28,10 @@ export default function UserAuthForm() {
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const defaultValues = {
-    email: 'demo@gmail.com'
+    email: '',
+    password: ''
   };
   const form = useForm<UserFormValue>({
     resolver: zodResolver(formSchema),
@@ -36,14 +39,27 @@ export default function UserAuthForm() {
   });
 
   const onSubmit = async (data: UserFormValue) => {
-    signIn('credentials', {
+    setError('');
+    setLoading(true);
+    const signin = await signIn('credentials', {
       email: data.email,
-      callbackUrl: callbackUrl ?? '/dashboard'
+      password: data.password,
+      redirect: false
     });
+    if (signin?.error) {
+      setLoading(false);
+      setError(signin.error);
+    } else {
+      setLoading(false);
+      window.location.href = '/dashboard';
+    }
   };
 
   return (
     <>
+      {error && error === 'CredentialsSignin' && (
+        <p className="text-center text-red-500">Invalid Credentials</p>
+      )}
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -67,13 +83,31 @@ export default function UserAuthForm() {
               </FormItem>
             )}
           />
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Password</FormLabel>
+                <FormControl>
+                  <Input
+                    type="password"
+                    placeholder=""
+                    disabled={loading}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
           <Button disabled={loading} className="ml-auto w-full" type="submit">
-            Continue With Email
+            Sign In
           </Button>
         </form>
       </Form>
-      <div className="relative">
+      {/* <div className="relative">
         <div className="absolute inset-0 flex items-center">
           <span className="w-full border-t" />
         </div>
@@ -83,7 +117,7 @@ export default function UserAuthForm() {
           </span>
         </div>
       </div>
-      <GithubSignInButton />
+      <GithubSignInButton /> */}
     </>
   );
 }

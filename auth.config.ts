@@ -1,8 +1,13 @@
+// @ts-nocheck
 import { NextAuthConfig } from 'next-auth';
 import CredentialProvider from 'next-auth/providers/credentials';
 import GithubProvider from 'next-auth/providers/github';
+import { PrismaClient } from 'prisma/prisma-client';
+import bcrypt from 'bcryptjs';
 
-const authConfig = {
+const prisma = new PrismaClient();
+
+export const authConfig = {
   providers: [
     GithubProvider({
       clientId: process.env.GITHUB_ID ?? '',
@@ -18,14 +23,26 @@ const authConfig = {
         }
       },
       async authorize(credentials, req) {
-        const user = {
-          id: '1',
-          name: 'John',
-          email: credentials?.email as string
-        };
+        const user = await prisma.user.findUnique({
+          where: {
+            email: credentials.email as string
+          }
+        });
+        // console.log(user)
         if (user) {
           // Any object returned will be saved in `user` property of the JWT
-          return user;
+          const passwordMatched = await bcrypt.compare(
+            credentials.password,
+            user.password
+          );
+          if (!passwordMatched) {
+            return null;
+          }
+          if (passwordMatched) {
+            return user;
+          } else {
+            return null;
+          }
         } else {
           // If you return null then an error will be displayed advising the user to check their details.
           return null;

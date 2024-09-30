@@ -1,0 +1,54 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  name       String
+  email      String   @unique
+  password   String
+  role       Role     @relation(fields: [roleId], references: [id])
+  roleId     String   @db.ObjectId
+  parentId   String?  @db.ObjectId
+  parentUser User?    @relation("SubUsers", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction) // Set referential actions
+  subUsers   User[]   @relation("SubUsers")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+}
+
+model Role {
+  id          String         @id @default(auto()) @map("_id") @db.ObjectId
+  name        String         @unique
+  description String?
+  permissions RolePermission[]
+  users       User[]
+}
+
+model Permission {
+  id          String         @id @default(auto()) @map("_id") @db.ObjectId
+  name        String         @unique
+  description String?
+  roles       RolePermission[]
+}
+
+model RolePermission {
+  id           String      @id @default(auto()) @map("_id") @db.ObjectId
+  roleId       String      @db.ObjectId
+  role         Role        @relation(fields: [roleId], references: [id])
+  permissionId String      @db.ObjectId
+  permission   Permission  @relation(fields: [permissionId], references: [id])
+
+  @@unique([roleId, permissionId]) // Ensure unique relation per pair
+}
+
