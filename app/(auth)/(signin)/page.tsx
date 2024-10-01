@@ -24,7 +24,13 @@ export default function AuthenticationPage() {
       </Link>
       <div className="relative hidden h-full flex-col gap-10 bg-muted p-10 text-white lg:flex dark:border-r">
         <div className="absolute inset-0 bg-primary" />
-        <Image src="/sierra-logo.svg" alt="" height={100} width={100} />
+        <Image
+          className="z-20"
+          src="/sierra-logo.svg"
+          alt=""
+          height={100}
+          width={100}
+        />
         <div className="z-20 flex w-full justify-center">
           <div className="flex flex-col items-center gap-8">
             <Image src="/login-img.svg" alt="" height={500} width={500} />
