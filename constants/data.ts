@@ -118,20 +118,38 @@ export const navItems: NavItem[] = [
     label: 'Dashboard'
   },
   {
-    title: 'User',
-    href: '/dashboard/user',
+    title: 'Customer',
+    href: '/dashboard/customer',
     icon: 'user',
     label: 'user'
   },
   {
-    title: 'Employee',
-    href: '/dashboard/employee',
+    title: 'Applicants',
+    href: '/dashboard/applicants',
     icon: 'employee',
     label: 'employee'
   },
   {
-    title: 'Profile',
-    href: '/dashboard/profile',
+    title: 'Users',
+    href: '/dashboard/users',
+    icon: 'profile',
+    label: 'profile'
+  },
+  {
+    title: 'Coverage',
+    href: '/dashboard/coverage',
+    icon: 'profile',
+    label: 'profile'
+  },
+  {
+    title: 'Integration',
+    href: '/dashboard/integration',
+    icon: 'profile',
+    label: 'profile'
+  },
+  {
+    title: 'Roles & Permissions',
+    href: '/dashboard/integration',
     icon: 'profile',
     label: 'profile'
   },

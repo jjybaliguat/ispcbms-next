@@ -1,34 +1,661 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "mongodb"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
+model bank {
+  bank_id   Int    @id @default(autoincrement())
+  name      String @db.VarChar(128)
+  no_rek    String @db.VarChar(128)
+  owner     String @db.VarChar(128)
+  create_by Int
+}
+
+model bot_telegram {
+  id                           Int    @id @default(autoincrement())
+  token                        String @db.VarChar(128)
+  username_bot                 String @db.VarChar(128)
+  username_owner               String @db.VarChar(128)
+  id_telegram_owner            String @db.VarChar(128)
+  id_group_teknisi             String @db.VarChar(50)
+  name_group_teknisi           String @db.VarChar(50)
+  is_active                    Int
+  notif_new_customer           Int
+  notif_income_payment_gateway Int
+  notif_new_ticket             Int
+  notif_update_ticket          Int
+  text_new_customer            String @db.Text
+  text_income_payment_gateway  String @db.Text
+  text_new_ticket              String @db.Text
+  text_update_ticket           String @db.Text
+}
+
+model cat_expenditure {
+  category_id Int    @id @default(autoincrement())
+  name        String @db.VarChar(50)
+  remark      String @db.Text
+}
+
+model cat_income {
+  category_id Int    @id @default(autoincrement())
+  name        String @db.VarChar(50)
+  remark      String @db.Text
+}
+
+model company {
+  id           Int    @id
+  company_name String @db.VarChar(100)
+  sub_name     String @db.VarChar(128)
+  description  String @db.Text
+  picture      String @db.Text
+  logo         String @db.Text
+  whatsapp     String @db.VarChar(100)
+  facebook     String @db.VarChar(100)
+  twitter      String @db.VarChar(100)
+  instagram    String @db.VarChar(100)
+  phone        String @db.VarChar(100)
+  email        String @db.VarChar(100)
+  owner        String @db.VarChar(128)
+  video        String @db.Text
+  address      String @db.Text
+  due_date     Int
+  ppn          Int
+  admin_fee    Int
+  terms        String @db.Text
+  policy       String @db.Text
+  expired      String @db.VarChar(50)
+  isolir       Int
+  import       Int
+  apps_name    String @db.VarChar(20)
+  cek_bill     Int
+  cek_usage    Int
+  latitude     String @db.Text
+  longitude    String @db.Text
+  phonecode    Int
+  country      Int
+  currency     String @db.VarChar(50)
+  timezone     String @db.VarChar(50)
+  speedtest    String @db.Text
+  tawk         String @db.Text
+  watermark    Int?
+  maintenance  Int
+  version      String @db.Text
+  last_update  String @db.Text
+  bcava        String @db.Text
+  licence      String @db.Text
+  auto_update  Int
+  f_page_id    String @db.Text
+}
+
+model confirm_payment {
+  confirm_id     Int    @id @default(autoincrement())
+  invoice_id     Int
+  invoice        invoice @relation(fields: [invoice_id], references: [invoice_id])
+  no_services    String @db.VarChar(25)
+  metode_payment String @db.VarChar(50)
+  date_payment   String @db.VarChar(50)
+  status         String @db.VarChar(20)
+  remark         String @db.Text
+  date_created   Int
+  picture        String @db.Text
+}
+
+model country {
+  id        Int     @id @default(autoincrement())
+  iso       String  @db.Char(2)
+  name      String  @db.VarChar(80)
+  nicename  String  @db.VarChar(80)
+  iso3      String? @db.Char(3)
+  numcode   Int?    @db.SmallInt
+  phonecode Int
+}
+
+model coupon {
+  coupon_id  Int    @id @default(autoincrement())
+  code       String @db.VarChar(20)
+  is_active  Int
+  percent    Int
+  one_time   Int
+  max_active Int
+  max_limit  Int
+  created    Int
+  expired    String @db.VarChar(50)
+  remark     String @db.Text
+}
+
+model cover_operator {
+  id          Int @id @default(autoincrement())
+  coverage_id Int
+  operator    Int
+  role_id     Int
+}
+
+model cover_package {
+  id          Int @id @default(autoincrement())
+  coverage_id Int
+  package_id  Int
+  created     Int
+}
+
+model coverage {
+  coverage_id    Int    @id @default(autoincrement())
+  c_name         String @db.VarChar(128)
+  address        String @db.Text
+  id_prov        String @db.VarChar(50)
+  id_kab         String @db.VarChar(50)
+  id_kec         String @db.VarChar(50)
+  id_kel         String @db.VarChar(50)
+  comment        String @db.Text
+  latitude       String @db.Text
+  longitude      String @db.Text
+  radius         Int
+  public         Int
+  code_area      String @db.VarChar(11)
+  create_by      Int
+  coverage_mitra Int
+}
+
+model coverage_doc {
+  id          Int    @id @default(autoincrement())
+  coverage_id Int
+  remark      String @db.Text
+  document    String @db.Text
+  created     Int
+  createby    Int
+  updated     Int
+  updateby    Int
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model currencies {
+  code             String @id @db.VarChar(15)
+  name             String @db.VarChar(100)
+  number           String @db.Char(5)
+  subunits_in_unit Int
+  countries        String @db.LongText
+}
+
+model customer {
+  customer_id      Int     @id @default(autoincrement())
+  name             String  @db.VarChar(128)
+  no_services      String  @db.VarChar(128)
+  email            String  @db.VarChar(128)
+  register_date    String  @db.VarChar(50)
+  due_date         Int
+  address          String  @db.Text
+  no_wa            String  @db.VarChar(128)
+  c_status         String  @db.VarChar(128)
+  ppn              Int
+  no_ktp           String  @db.VarChar(128)
+  ktp              String  @db.Text
+  created          Int
+  mode_user        String  @db.VarChar(50)
+  user_mikrotik    String  @db.VarChar(128)
+  mitra            Int
+  coverage         Int
+  auto_isolir      Int
+  type_id          String  @db.VarChar(50)
+  router           Int
+  codeunique       Int
+  phonecode        Int
+  latitude         String  @db.Text
+  longitude        String  @db.Text
+  user_profile     String  @db.VarChar(50)
+  action           Int
+  type_payment     Int
+  max_due_isolir   Int
+  cust_amount      Int
+  connection       Int?
+  level            Int?
+  olt              Int?
+  cust_description String? @db.Text
+  mac_address      String  @db.Text
+  type_ip          Int
+  month_due_date   Int
+  id_odc           Int
+  id_odp           Int
+  no_port_odp      Int
+  serial_number    String  @db.Text
+  pass_mikrotik    String  @db.Text
+  slot             Int
+  port             Int
+  onu_index        Int
+  onu_type         String  @db.Text
+  vlan             Int
+  send_bill        Int
+  no_va            String  @db.Text
+  up_onu           String  @db.Text
+  down_onu         String  @db.Text
+  customer_mitra   Int
+  createby         Int
+  customer_type    String  @db.Text
+}
+
+model customer_doc {
+  id          Int    @id @default(autoincrement())
+  customer_id Int
+  remark      String @db.Text
+  document    String @db.Text
+  created     Int
+  createby    Int
+  updated     Int
+  updateby    Int
+}
+
+model customer_services {
+  id               Int    @id @default(autoincrement())
+  uid              String @db.Text
+  no_services      String @db.Text
+  id_customer      Int
+  coverage         Int
+  id_odc           Int
+  id_odp           Int
+  no_port_odp      Int
+  register_date    String @db.Text
+  c_status         String @db.Text
+  ppn              Int
+  type_payment     Int
+  due_date         Int
+  month_due_date   Int
+  auto_isolir      Int
+  max_due_isolir   Int
+  action           Int
+  router           Int
+  mode_user        String @db.Text
+  user_mikrotik    String @db.Text
+  user_profile     String @db.Text
+  pass_mikrotik    String @db.Text
+  send_bill        Int
+  created          Int
+  create_by        Int
+  codeunique       Int
+  olt              Int
+  type_ip          Int
+  connection       Int
+  bill_month       Int
+  remark           String @db.Text
+  latitude         String @db.Text
+  longitude        String @db.Text
+  mac_address      String @db.Text
+  services_address String @db.Text
+  set_primary      Int
+}
+
+model customer_status {
+  id          Int    @id @default(autoincrement())
+  status      String @db.Text
+  remark      String @db.Text
+  active_bill Int
+}
+
+model customer_type {
+  id      Int    @id @default(autoincrement())
+  name    String @db.Text
+  remark  String @db.Text
+  created Int
+}
+
+model customer_usage {
+  id          Int    @id @default(autoincrement())
+  no_services String @db.VarChar(50)
+  count_usage String @db.VarChar(100)
+  date_usage  String @db.VarChar(50)
+  last_update String @db.VarChar(40)
+}
+
+model income {
+  income_id    Int    @id @default(autoincrement())
+  date_payment String @db.VarChar(125)
+  nominal      String @db.VarChar(125)
+  remark       String @db.Text
+  created      Int
+  category     Int
+  create_by    Int
+  invoice_id   Int
+  no_services  String @db.VarChar(50)
+  mode_payment String @db.VarChar(50)
+  coverage     Int
+}
+
+model invoice {
+  invoice_id          Int    @id @default(autoincrement())
+  invoice             String @unique(map: "invoice") @db.VarChar(128)
+  code_unique         Int
+  month               String @db.VarChar(11)
+  year                Int
+  no_services         String @db.VarChar(128)
+  status              String @db.VarChar(128)
+  i_ppn               Int
+  created             Int
+  create_by           Int
+  date_payment        Int?
+  metode_payment      String @db.VarChar(100)
+  admin_fee           Int
+  amount              Int
+  order_id            String @db.VarChar(128)
+  token               String @db.Text
+  payment_type        String @db.VarChar(128)
+  transaction_time    String @db.VarChar(50)
+  bank                String @db.VarChar(50)
+  va_number           String @db.VarChar(50)
+  pdf_url             String @db.Text
+  status_code         String @db.VarChar(5)
+  expired             String @db.Text
+  x_id                String @db.VarChar(128)
+  x_bank_code         String @db.VarChar(128)
+  x_method            String @db.VarChar(50)
+  x_account_number    String @db.VarChar(50)
+  x_expired           String @db.VarChar(50)
+  x_external_id       String @db.VarChar(50)
+  x_amount            String @db.VarChar(50)
+  x_qrcode            String @db.Text
+  reference           String @db.Text
+  payment_url         String @db.Text
+  code_coupon         String @db.VarChar(50)
+  disc_coupon         Int
+  outlet              Int
+  status_income       String @db.VarChar(50)
+  inv_ppn             Int?
+  inv_due_date        String @db.Text
+  date_isolir         String @db.Text
+  send_before_due     String @db.Text
+  send_due            String @db.Text
+  send_bill           String @db.Text
+  send_paid           String @db.Text
+  date_paid           String @db.Text
+  send_due_sms        String @db.Text
+  send_before_due_sms String @db.Text
+  send_bill_email     String @db.Text
+  send_bill_sms       String @db.Text
+  send_paid_email     String @db.Text
+  send_paid_sms       String @db.Text
+  subtotal            Int
+  amountuniq          Int
+  daterequniq         Int
+
+  confirm_payment confirm_payment[]
+}
+
+model invoice_detail {
+  detail_id     Int    @id @default(autoincrement())
+  invoice_id    String @db.VarChar(128)
+  price         String @db.VarChar(125)
+  qty           String @db.VarChar(125)
+  disc          String @db.VarChar(128)
+  remark        String @db.Text
+  total         String @db.VarChar(128)
+  item_id       Int
+  category_id   Int
+  d_month       Int
+  d_year        Int
+  d_no_services String @db.VarChar(50)
+
+  @@index([category_id], map: "category_id")
+  @@index([invoice_id], map: "invoice_id")
+  @@index([item_id], map: "item_id")
+}
+
+model invoice_payment {
+  payment_id       Int    @id @default(autoincrement()) @db.UnsignedInt
+  invoice_id       Int
+  amount_paid      Int
+  payment_date     String @db.Text
+  payment_method   String @db.Text
+  description      String @db.Text
+  create_by        Int
+  created          Int
+  reference_number String @db.Text
+}
+
+model keys {
+  id             Int     @id @default(autoincrement())
+  user_id        Int
+  key            String  @db.VarChar(40)
+  level          Int
+  ignore_limits  Boolean @default(false)
+  is_private_key Boolean @default(false)
+  ip_addresses   String? @db.Text
+  date_created   Int
+}
+
+model logs {
+  log_id   Int    @id @default(autoincrement())
+  name     String @db.VarChar(50)
+  datetime Int
+  category String @db.VarChar(128)
+  role_id  Int
+  user_id  Int
+  remark   String @db.Text
+  date_log String @db.Text
+}
+
+model m_id_card {
+  id      Int    @id @default(autoincrement())
+  name    String @db.Text
+  remark  String @db.Text
+  created Int
+}
+
+model m_method_payment {
+  id      Int    @id @default(autoincrement())
+  name    String @db.Text
+  public  Int
+  remark  String @db.Text
+  created Int
+}
+
+model m_odc {
+  id_odc        Int    @id @default(autoincrement())
+  code_odc      String @db.Text
+  coverage_odc  Int
+  no_port_olt   Int
+  color_tube_fo String @db.Text
+  no_pole       String @db.Text
+  latitude      String @db.Text
+  longitude     String @db.Text
+  total_port    Int
+  document      String @db.Text
+  remark        String @db.Text
+  created       Int
+  role_id       Int
+  create_by     Int
+}
+
+model m_odp {
+  id_odp        Int    @id @default(autoincrement())
+  code_odp      String @db.Text
+  code_odc      Int
+  coverage_odp  Int
+  no_port_odc   Int
+  color_tube_fo String @db.Text
+  no_pole       String @db.Text
+  latitude      String @db.Text
+  longitude     String @db.Text
+  total_port    Int
+  document      String @db.Text
+  remark        String @db.Text
+  created       Int
+  create_by     Int
+  role_id       Int
+}
+
+model maps {
+  id     Int    @id @default(autoincrement())
+  vendor String @db.Text
+  token  String @db.Text
+}
+
+model modem {
+  id             Int    @id @default(autoincrement())
+  type           Int
+  name           String @db.VarChar(50)
+  customer_id    Int
+  show_customer  Int
+  ip_local       String @db.Text
+  ip_public      String @db.Text
+  ssid_name      String @db.VarChar(50)
+  ssid_password  String @db.VarChar(50)
+  login_user     String @db.VarChar(50)
+  login_password String @db.VarChar(50)
+  remark         String @db.Text
+  created        Int
+  createby       Int
+  updated        Int
+  updateby       Int
+}
+
+model moota {
+  id            Int    @id @default(autoincrement())
+  is_active     Int
+  token         String @db.Text
+  send_whatsapp String @db.Text
+  send_telegram String @db.Text
+  secret        String @db.Text
+  no_whatsapp   String @db.Text
+  text_income   String @db.Text
+  text_expend   String @db.Text
+  change_bill   Int
+}
+
+model odc_doc {
+  id       Int    @id @default(autoincrement())
+  odc_id   Int
+  remark   String @db.Text
+  document String @db.Text
+  created  Int
+  createby Int
+  updated  Int
+  updateby Int
+}
+
+model odp_doc {
+  id       Int    @id @default(autoincrement())
+  odp_id   Int
+  remark   String @db.Text
+  document String @db.Text
+  created  Int
+  createby Int
+  updated  Int
+  updateby Int
+}
+
+model olt {
+  id         Int    @id @default(autoincrement())
+  is_active  Int
+  ip_address String @db.Text
+  alias      String @db.VarChar(40)
+  vendor     String @db.VarChar(50)
+  username   String @db.VarChar(50)
+  password   String @db.VarChar(50)
+  value      String @db.VarChar(40)
+  token      String @db.Text
+  bridge_olt String @db.Text
+  port       Int
+  type       String @db.Text
+}
+
+model package_category {
+  p_category_id Int    @id @default(autoincrement())
+  name          String @db.VarChar(125)
+  description   String @db.Text
+  date_created  Int
+  date_updated  Int
+}
+
+model package_item {
+  p_item_id     Int    @id @default(autoincrement())
+  name          String @db.VarChar(125)
+  price         String @db.VarChar(125)
+  picture       String @db.Text
+  description   String @db.Text
+  category_id   Int
+  date_created  Int
+  date_update   Int
+  public        Int
+  create_by     Int
+  is_active     Int
+  role_id       Int
+  package_mitra Int
+
+  @@index([category_id], map: "category_id")
+}
+
+model payment_gateway {
+  id           Int    @id
+  vendor       String @db.VarChar(50)
+  api_key      String @db.Text
+  server_key   String @db.Text
+  client_key   String @db.Text
+  is_active    Int
+  mode         Int
+  expired      Int
+  bca_va       Int
+  bri_va       Int
+  bni_va       Int
+  kodemerchant String @db.Text
+  mandiri_va   Int
+  cimb_va      Int
+  mybank_va    Int
+  ovo          Int
+  permata_va   Int
+  gopay        Int
+  shopeepay    Int
+  indomaret    Int
+  alfamart     Int
+  admin_fee    Int
+  va           Int
+  ewallet      Int
+  retail       Int
+  qrcode       Int
+  alfamidi     Int
+  muamalat_va  Int
+  sinarmas_va  Int
+  dana         Int
+  linkaja      Int
+  open_payment Int
+}
+
+model payment_gateway_transaction {
+  id               Int    @id @default(autoincrement())
+  vendor           String @db.Text
+  external_id      String @db.Text
+  method           String @db.Text
+  code_number      String @db.Text
+  customer_id      String @db.Text
+  no_services      String @db.Text
+  invoice          String @db.Text
+  reference        String @db.Text
+  payment_url      String @db.Text
+  transaction_time String @db.Text
+  status_payment   String @db.Text
+  result_paid      String @db.Text
+  result_create    String @db.Text
+  date_created     String @db.Text
+  amount           String @db.Text
+  expired          String @db.Text
+  instructions     String @db.Text
+}
+
 model User {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  id         Int      @id @default(autoincrement()) @map("id") // Changed to Int with autoincrement
   name       String
   email      String   @unique
   password   String
   role       Role     @relation(fields: [roleId], references: [id])
-  roleId     String   @db.ObjectId
-  parentId   String?  @db.ObjectId
-  parentUser User?    @relation("SubUsers", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction) // Set referential actions
+  roleId     Int      // Changed to Int
+  parentId   Int?     // Changed to Int, nullable
+  parentUser User?    @relation("SubUsers", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction) 
   subUsers   User[]   @relation("SubUsers")
   createdAt  DateTime @default(now()) @map("created_at")
   updatedAt  DateTime @updatedAt @map("updated_at")
 }
 
 model Role {
-  id          String         @id @default(auto()) @map("_id") @db.ObjectId
+  id          Int            @id @default(autoincrement()) @map("id") // Changed to Int with autoincrement
   name        String         @unique
   description String?
   permissions RolePermission[]
@@ -36,19 +663,18 @@ model Role {
 }
 
 model Permission {
-  id          String         @id @default(auto()) @map("_id") @db.ObjectId
+  id          Int            @id @default(autoincrement()) @map("id") // Changed to Int with autoincrement
   name        String         @unique
   description String?
   roles       RolePermission[]
 }
 
 model RolePermission {
-  id           String      @id @default(auto()) @map("_id") @db.ObjectId
-  roleId       String      @db.ObjectId
-  role         Role        @relation(fields: [roleId], references: [id])
-  permissionId String      @db.ObjectId
-  permission   Permission  @relation(fields: [permissionId], references: [id])
+  id           Int       @id @default(autoincrement()) @map("id") // Changed to Int with autoincrement
+  roleId       Int       // Changed to Int
+  role         Role      @relation(fields: [roleId], references: [id])
+  permissionId Int       // Changed to Int
+  permission   Permission @relation(fields: [permissionId], references: [id])
 
   @@unique([roleId, permissionId]) // Ensure unique relation per pair
 }
-

@@ -27,6 +27,13 @@ export interface FooterItem {
   }[];
 }
 
+export interface CustomerProps {
+  customer_id: number;
+  name: string;
+  email: string;
+  address: string;
+}
+
 export type MainNavItem = NavItemWithOptionalChildren;
 
 export type SidebarNavItem = NavItemWithChildren;

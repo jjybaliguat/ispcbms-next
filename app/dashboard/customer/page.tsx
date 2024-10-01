@@ -5,7 +5,6 @@ import { CustomerTable } from '@/components/tables/employee-tables/customer-tabl
 import { buttonVariants } from '@/components/ui/button';
 import { Heading } from '@/components/ui/heading';
 import { Separator } from '@/components/ui/separator';
-import { Employee } from '@/constants/data';
 import { cn } from '@/lib/utils';
 import { CustomerProps } from '@/types';
 import { Plus } from 'lucide-react';
@@ -22,20 +21,20 @@ type paramsProps = {
   };
 };
 
-export default async function page({ searchParams }: paramsProps) {
+export default async function Customer({ searchParams }: paramsProps) {
   const page = Number(searchParams.page) || 1;
   const pageLimit = Number(searchParams.limit) || 10;
-  const country = searchParams.search || null;
+  const name = searchParams.search || null;
   const offset = (page - 1) * pageLimit;
 
   const res = await fetch(
-    `https://api.slingacademy.com/v1/sample-data/users?offset=${offset}&limit=${pageLimit}` +
-      (country ? `&search=${country}` : '')
+    `http://localhost:3000/api/customer?search=${name}&offset=${offset}`
   );
-  const employeeRes = await res.json();
-  const totalUsers = employeeRes.total_users; //1000
+
+  const customerRes = await res.json();
+  const totalUsers = customerRes.count; //1000
   const pageCount = Math.ceil(totalUsers / pageLimit);
-  const employee: CustomerProps[] = employeeRes.users;
+  const customer: CustomerProps[] = customerRes.customers;
   return (
     <PageContainer>
       <div className="space-y-4">
@@ -43,8 +42,8 @@ export default async function page({ searchParams }: paramsProps) {
 
         <div className="flex items-start justify-between">
           <Heading
-            title={`Employee (${totalUsers})`}
-            description="Manage employees (Server side table functionalities.)"
+            title={`Customer (${totalUsers})`}
+            description="Manage customers (Server side table functionalities.)"
           />
 
           <Link
@@ -57,11 +56,11 @@ export default async function page({ searchParams }: paramsProps) {
         <Separator />
 
         <CustomerTable
-          searchKey="country"
+          searchKey="name"
           pageNo={page}
           columns={columns}
           totalUsers={totalUsers}
-          data={employee}
+          data={customer}
           pageCount={pageCount}
         />
       </div>
